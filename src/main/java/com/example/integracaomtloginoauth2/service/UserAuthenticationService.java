@@ -1,8 +1,12 @@
 package com.example.integracaomtloginoauth2.service;
 
 import com.example.integracaomtloginoauth2.model.Usuario;
+import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -18,6 +22,11 @@ public class UserAuthenticationService {
     public UserAuthenticationService(UsuarioRepository usuarioRepository, HttpSession session) {
         this.usuarioRepository = usuarioRepository;
         this.session = session;
+    }
+
+    public Authentication authenticateUser(@Valid UsuarioRequest usuario) {
+        session.setAttribute("usuario", usuario);
+        return new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword());
     }
 
     public Optional<Usuario> getUsuarioLogado() {

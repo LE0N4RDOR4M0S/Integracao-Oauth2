@@ -4,6 +4,7 @@ import com.example.integracaomtloginoauth2.model.Usuario;
 import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.model.UsuarioResponse;
 import com.example.integracaomtloginoauth2.repository.UsuarioRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -11,9 +12,11 @@ import java.util.List;
 @Service
 public class UsuarioService {
     private final UsuarioRepository usuarioRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -32,7 +35,20 @@ public class UsuarioService {
      * @return UsuarioResponse
      */
     public UsuarioResponse findById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow();
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        UsuarioResponse user = new UsuarioResponse().toObject(usuario);
+        return user;
+    }
+
+    /**
+     * Método que retorna um usuário pelo username
+     * @param username String
+     * @return UsuarioResponse
+     */
+    public UsuarioResponse findByUsername(String username) {
+        Usuario usuario = usuarioRepository.findByUsername(username)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
         UsuarioResponse user = new UsuarioResponse().toObject(usuario);
         return user;
     }
@@ -43,7 +59,11 @@ public class UsuarioService {
      * @return UsuarioResponse
      */
     public UsuarioResponse save(UsuarioRequest usuario) {
+        if (existsThisUser(usuario.getUsername(), usuario.getEmail())) {
+            throw new RuntimeException("Usuário já existe");
+        }
         Usuario user = usuario.toEntity();
+        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuarioRepository.save(user);
         UsuarioResponse usuarioResponse = new UsuarioResponse().toObject(user);
         return usuarioResponse;
@@ -53,8 +73,10 @@ public class UsuarioService {
      * Método que deleta um usuário pelo id
      * @param id Long
      */
-    public void deleteById(Long id) {
-        usuarioRepository.deleteById(id);
+    public String deleteById(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        return "Usuário deletado com sucesso";
     }
 
     /**
@@ -68,9 +90,13 @@ public class UsuarioService {
         user.setUsername(usuario.getUsername());
         user.setEmail(usuario.getEmail());
         user.setCpf(usuario.getCpf());
-        user.setPassword(usuario.getPassword());
+        user.setPassword(passwordEncoder.encode(usuario.getPassword()));
         Usuario userUpdated = usuarioRepository.save(user);
         UsuarioResponse usuarioResponse = new UsuarioResponse().toObject(userUpdated);
         return usuarioResponse;
+    }
+
+    public Boolean existsThisUser(String username, String email) {
+        return usuarioRepository.existsByUsername(username) || usuarioRepository.existsByEmail(email);
     }
 }

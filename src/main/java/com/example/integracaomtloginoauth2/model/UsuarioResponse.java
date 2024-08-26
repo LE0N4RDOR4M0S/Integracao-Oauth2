@@ -13,26 +13,26 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioResponse {
-    private Long id;
     private String username;
     private String email;
     private String cpf;
-    private String password;
 
     public UsuarioResponse toObject(Usuario user) {
-        UsuarioResponse usuario = new UsuarioResponse(user.getId(),user.getUsername(),user.getEmail(),user.getCpf(),user.getPassword());
+        UsuarioResponse usuario = new UsuarioResponse(user.getUsername(),user.getEmail(),user.getCpf());
         return usuario;
     }
 
     public static List<UsuarioResponse> listOf(List<Usuario> usuarios) {
         return usuarios.stream().map(usuario -> {
             UsuarioResponse usuarioResponse = new UsuarioResponse();
-            usuarioResponse.setId(usuario.getId());
             usuarioResponse.setUsername(usuario.getUsername());
             usuarioResponse.setEmail(usuario.getEmail());
             usuarioResponse.setCpf(usuario.getCpf());
-            usuarioResponse.setPassword(usuario.getPassword());
             return usuarioResponse;
         }).collect(Collectors.toList());
+    }
+
+    public String getName() {
+        return username;
     }
 }
