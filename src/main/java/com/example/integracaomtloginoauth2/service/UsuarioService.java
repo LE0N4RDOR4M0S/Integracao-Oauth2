@@ -63,7 +63,7 @@ public class UsuarioService {
             throw new RuntimeException("Usuário já existe");
         }
         Usuario user = usuario.toEntity();
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
+        user.setPassword(passwordEncoder.encode(usuario.getPassword()));
         usuarioRepository.save(user);
         UsuarioResponse usuarioResponse = new UsuarioResponse().toObject(user);
         return usuarioResponse;

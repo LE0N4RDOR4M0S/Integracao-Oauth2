@@ -18,16 +18,17 @@ public class UsuarioRequest {
     public Usuario toEntity() {
         Usuario usuario = new Usuario();
         usuario.setUsername(this.username);
+        usuario.setName(this.username);
         usuario.setEmail(this.email);
         usuario.setCpf(this.cpf);
         usuario.setPassword(this.password);
         return usuario;
     }
 
-    public UsuarioRequest toObject(Usuario user) {
-        UsuarioRequest usuario = new UsuarioRequest(user.getUsername(),user.getEmail(),user.getCpf(),user.getPassword());
-        return usuario;
-    }
+//    public UsuarioRequest toObject(Usuario user) {
+//        UsuarioRequest usuario = new UsuarioRequest(user.getUsername(),user.getEmail(),user.getCpf(),user.getPassword());
+//        return usuario;
+//    }
 
     public boolean equals(final Object o) {
         if (o == this) return true;

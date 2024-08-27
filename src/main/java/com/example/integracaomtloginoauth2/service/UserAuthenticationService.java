@@ -1,5 +1,6 @@
 package com.example.integracaomtloginoauth2.service;
 
+import com.example.integracaomtloginoauth2.model.LoginRequest;
 import com.example.integracaomtloginoauth2.model.Usuario;
 import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.repository.UsuarioRepository;
@@ -8,6 +9,7 @@ import jakarta.validation.Valid;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -18,13 +20,20 @@ public class UserAuthenticationService {
 
     private final UsuarioRepository usuarioRepository;
     private final HttpSession session;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserAuthenticationService(UsuarioRepository usuarioRepository, HttpSession session) {
+    public UserAuthenticationService(UsuarioRepository usuarioRepository, HttpSession session, PasswordEncoder passwordEncoder) {
         this.usuarioRepository = usuarioRepository;
         this.session = session;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public Authentication authenticateUser(@Valid UsuarioRequest usuario) {
+    public Authentication authenticateUser(@Valid LoginRequest user) {
+        Usuario usuario = usuarioRepository.findByUsername(user.getUsername())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        if (passwordEncoder.matches(user.getPassword(), usuario.getPassword())) {
+            throw new RuntimeException("Senha inválida");
+        }
         session.setAttribute("usuario", usuario);
         return new UsernamePasswordAuthenticationToken(usuario.getUsername(), usuario.getPassword());
     }

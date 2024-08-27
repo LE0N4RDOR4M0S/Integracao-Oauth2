@@ -47,10 +47,6 @@ public class JwtTokenService {
         }
     }
 
-    public void invalidateToken(String token) {
-        // TODO: implement token invalidation
-    }
-
     public boolean isTokenExpired(String token) {
         Claims claims = Jwts.parser()
                 .setSigningKey(key)

@@ -4,7 +4,8 @@ import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.model.UsuarioResponse;
 import com.example.integracaomtloginoauth2.service.UsuarioService;
 import jakarta.validation.Valid;
-import org.springframework.stereotype.Controller;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
@@ -12,6 +13,7 @@ import java.util.Collection;
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
+    private static final String url = "index.html";
     private final UsuarioService usuarioService;
 
     public UsuarioController(UsuarioService usuarioService) {
@@ -33,14 +35,18 @@ public class UsuarioController {
         return usuarioService.findAll();
     }
 
-    @PostMapping("/{id}")
-    public UsuarioResponse updateUsuario(@PathVariable Long id,@RequestBody UsuarioRequest user) {
+    @PutMapping("/{id}")
+    public UsuarioResponse updateUsuario(@PathVariable Long id, @RequestBody UsuarioRequest user) {
         return usuarioService.update(id, user);
     }
 
     @PostMapping("/register")
-    public UsuarioResponse saveUsuario(@Valid @RequestBody UsuarioRequest user) {
-        System.out.println("UsuarioController.saveUsuario");
-        return usuarioService.save(user);
+    public ResponseEntity<UsuarioResponse> saveUsuario(@RequestParam MultiValueMap<String, String> paramMap) {
+        UsuarioRequest user = new UsuarioRequest();
+        user.setUsername(paramMap.getFirst("username"));
+        user.setEmail(paramMap.getFirst("email"));
+        user.setCpf(paramMap.getFirst("cpf"));
+        user.setPassword(paramMap.getFirst("password"));
+        return ResponseEntity.ok(usuarioService.save(user));
     }
 }

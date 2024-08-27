@@ -24,11 +24,6 @@ public class AplicationConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
                 .addServersItem(new Server().url(aplicationProperties.getApiUrl()))
