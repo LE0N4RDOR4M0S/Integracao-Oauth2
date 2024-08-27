@@ -55,4 +55,13 @@ public class JwtTokenService {
                 .getBody();
         return claims.getExpiration().before(new Date());
     }
+
+    public String invalidateToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis()))
+                .signWith(key)
+                .compact();
+    }
 }

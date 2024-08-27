@@ -16,14 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 
 @Controller()
 public class AuthController {
-    private final PasswordEncoder passwordEncoder;
     private final UserAuthenticationService userAuthenticationService;
     private final JwtTokenService jwtTokenService;
 
-    public AuthController(UserAuthenticationService userAuthenticationService, JwtTokenService jwtTokenService, PasswordEncoder passwordEncoder) {
+    public AuthController(UserAuthenticationService userAuthenticationService, JwtTokenService jwtTokenService) {
         this.userAuthenticationService = userAuthenticationService;
         this.jwtTokenService = jwtTokenService;
-        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping("/auth/login")
@@ -43,6 +41,17 @@ public class AuthController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
+    }
+
+    //TODO:Implementação do logout em JWT é feita invalidando o token no servidor e removendo o token do cliente (frontend)
+    @GetMapping("/auth/logout")
+    public String logout(@RequestHeader("Authorization") String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            String jwt = token.substring(7);
+            jwtTokenService.invalidateToken(jwt);
+        }
+        SecurityContextHolder.clearContext();
+        return "redirect:/auth/login";
     }
 
     @GetMapping("/register")
