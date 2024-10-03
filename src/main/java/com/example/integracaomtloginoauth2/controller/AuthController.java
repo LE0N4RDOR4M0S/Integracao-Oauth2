@@ -6,6 +6,7 @@ import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.service.JwtTokenService;
 import com.example.integracaomtloginoauth2.service.UserAuthenticationService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-@Controller()
+@Controller
 public class AuthController {
     private final UserAuthenticationService userAuthenticationService;
     private final JwtTokenService jwtTokenService;
@@ -43,15 +44,25 @@ public class AuthController {
         }
     }
 
-    //TODO:Implementação do logout em JWT é feita invalidando o token no servidor e removendo o token do cliente (frontend)
-    @GetMapping("/auth/logout")
-    public String logout(@RequestHeader("Authorization") String token) {
-        if (token != null && token.startsWith("Bearer ")) {
-            String jwt = token.substring(7);
-            jwtTokenService.invalidateToken(jwt);
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(@CookieValue(value = "JSESSIONID", required = false) String token) {
+        try {
+            if (token != null) {
+                token = "Bearer " + token;
+                if (token.startsWith("Bearer ") && token.chars().filter(ch -> ch == '.').count() == 2) {
+                    jwtTokenService.invalidateToken(token);
+                } else {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token inválido");
+                }
+            } else {
+                System.out.println("No token received in the cookie");
+            }
+            SecurityContextHolder.clearContext();
+            return ResponseEntity.ok("Logout realizado com sucesso");
+        } catch (Exception e) {
+            System.out.println("Error during logout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logout failed");
         }
-        SecurityContextHolder.clearContext();
-        return "redirect:/auth/login";
     }
 
     @GetMapping("/register")

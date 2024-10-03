@@ -3,6 +3,7 @@ package com.example.integracaomtloginoauth2.config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,6 +24,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 public class SecurityConfig {
 //    .requestMatchers(HttpMethod.GET, "/user/info", "/api/foos/**").hasAuthority("SCOPE_read")
 //    .requestMatchers(HttpMethod.POST, "/api/foos").hasAuthority("SCOPE_write")
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -30,14 +32,21 @@ public class SecurityConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
-        security.cors(withDefaults())
+        security.cors(Customizer.withDefaults())
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
                         .requestMatchers(HttpMethod.GET, "/register").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/register").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/logout").authenticated()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(withDefaults())
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessUrl("/auth/login?logout")
+                        .permitAll()
                 )
                 .formLogin(form -> form
                         .loginPage("/auth/login")
