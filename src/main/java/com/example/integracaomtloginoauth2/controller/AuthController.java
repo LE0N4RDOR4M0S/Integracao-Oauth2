@@ -5,6 +5,8 @@ import com.example.integracaomtloginoauth2.model.LoginRequest;
 import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.service.JwtTokenService;
 import com.example.integracaomtloginoauth2.service.UserAuthenticationService;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,23 +47,18 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(value = "JSESSIONID", required = false) String token) {
+    public ResponseEntity<?> logout(@CookieValue(value = "JSESSIONID", required = false) String token, HttpServletResponse response) {
         try {
             if (token != null) {
-                token = "Bearer " + token;
-                if (token.startsWith("Bearer ") && token.chars().filter(ch -> ch == '.').count() == 2) {
-                    jwtTokenService.invalidateToken(token);
-                } else {
-                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Token inválido");
-                }
+                jwtTokenService.invalidateToken(token,response);
             } else {
-                System.out.println("No token received in the cookie");
+                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{token.not.present}");
             }
             SecurityContextHolder.clearContext();
             return ResponseEntity.ok("Logout realizado com sucesso");
         } catch (Exception e) {
-            System.out.println("Error during logout: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Logout failed");
+            System.out.println("{token.not.logout}" + e.getMessage());
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{token.not.logout}");
         }
     }
 

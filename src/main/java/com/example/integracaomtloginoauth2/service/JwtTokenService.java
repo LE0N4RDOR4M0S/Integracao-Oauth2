@@ -64,6 +64,5 @@ public class JwtTokenService {
         cookie.setHttpOnly(true);
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-        System.out.println("Token invalidado");
     }
 }
