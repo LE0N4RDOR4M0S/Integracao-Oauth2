@@ -31,7 +31,7 @@ public class UserAuthenticationService {
     public Authentication authenticateUser(@Valid LoginRequest user) {
         Usuario usuario = usuarioRepository.findByUsername(user.getUsername())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-        if (passwordEncoder.matches(user.getPassword(), usuario.getPassword())) {
+        if (!passwordEncoder.matches(user.getPassword(), usuario.getPassword())) {
             throw new RuntimeException("Senha inválida");
         }
         session.setAttribute("usuario", usuario);
