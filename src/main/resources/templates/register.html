@@ -3,49 +3,49 @@
     <meta charset="UTF-8">
     <title>Registrar</title>
 </head>
-<div>
-    <nav>Registro de Usuário</nav>
-</div>
-<div>
-    <h2>Registrar</h2>
-    <form id="frm_registro" method="post" th:action="@{/api/usuarios/register}">
-        <div>
-            <label for="username">Usuário:</label>
-            <input type="text" id="username" name="username" required>
+<div style="font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box;">
+    <nav style="color: #333; padding: 1rem; text-align: center;">
+        <h1 style="margin: 0;">Registro de Usuário</h1>
+    </nav>
+    <div style="display: flex; justify-content: center; align-items: center; height: 80vh; background-color: #f4f4f4;">
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px;">
+            <h2 style="text-align: center; color: #333;">Registrar</h2>
+            <form id="frm_registro" method="post" th:action="@{/api/usuarios/register}" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label for="username" style="display: block; margin-bottom: 0.5rem; color: #555;">Usuário:</label>
+                    <input type="text" id="username" name="username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="cpf" style="display: block; margin-bottom: 0.5rem; color: #555;">CPF:</label>
+                    <input type="text" id="cpf" name="cpf" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="email" style="display: block; margin-bottom: 0.5rem; color: #555;">Email:</label>
+                    <input type="email" id="email" name="email" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="password" style="display: block; margin-bottom: 0.5rem; color: #555;">Senha:</label>
+                    <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <button type="submit" style="background-color: #4CAF50; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Registrar</button>
+                <div style="margin-top: 1rem; text-align: center;">
+                    <a href="/auth/login" style="color: #4CAF50; text-decoration: none;">← Login</a>
+                </div>
+            </form>
+            <div style="margin-top: 1rem; text-align: center;">
+                <button class="g-recaptcha"
+                        data-sitekey="6Le6kjUqAAAAAIU-MP3Fr0Fit-gcMJn69CdrSOkC"
+                        data-callback="onSubmit"
+                        data-action="submit"
+                        style="background-color: #4CAF50; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                    Submit
+                </button>
+            </div>
         </div>
-        <div>
-            <label for="cpf">CPF:</label>
-            <input type="text" id="cpf" name="cpf" required>
-        </div>
-        <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-        </div>
-        <div>
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <button type="submit">Registrar</button>
-        <div>
-            <a href="/auth/login"><- Login</a>
-        </div>
-    </form>
-        <button class="g-recaptcha"
-                data-sitekey="6Le6kjUqAAAAAIU-MP3Fr0Fit-gcMJn69CdrSOkC"
-                data-callback='onSubmit'
-                data-action='submit'>Submit</button>
-        <div><span>©Criado e desenvolvido por Leonardo de Oliveira Ramos</span></div>
-
+    </div>
+    <footer style="padding: 1rem; background-color: #333; color: white;">
+        <span>© Criado e desenvolvido por Leonardo de Oliveira Ramos</span>
+    </footer>
 </div>
 <script src="https://www.google.com/recaptcha/api.js?render=6Le6kjUqAAAAAIU-MP3Fr0Fit-gcMJn69CdrSOkC"></script>
-<script>
-    function onClick(e) {
-        e.preventDefault();
-        grecaptcha.ready(function() {
-            grecaptcha.execute('6Le6kjUqAAAAAIU-MP3Fr0Fit-gcMJn69CdrSOkC', {action: 'submit'}).then(function(token) {
-                // Add your logic to submit to your backend server here.
-            });
-        });
-    }
-</script>
 </html>
