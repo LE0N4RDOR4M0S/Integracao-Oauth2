@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  auth-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8081:8081"
+      - "5005:5005"
+    volumes:
+      - ./src:/app/src
+    environment:
+      - SPRING_DEVTOOLS_RESTART_ENABLED=true
