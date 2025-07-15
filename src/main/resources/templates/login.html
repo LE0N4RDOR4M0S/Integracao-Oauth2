@@ -5,33 +5,35 @@
     <title>LoginPage</title>
 </head>
 <body>
-<div>
-    <nav>
-        Login integrado
+<div style="font-family: Arial, sans-serif; margin: 0; padding: 0; box-sizing: border-box;">
+    <nav style="color: #333; padding: 1rem; text-align: center;">
+        <h1 style="margin: 0;">Login Integrado</h1>
     </nav>
-</div>
-<div>
-    <h2>Entrar</h2>
-    <form id="login" method="post" th:action="@{/auth/login}">
-        <div>
-            <label for="username">Usuário:</label>
-            <input type="text" id="username" name="username" required>
-        </div>
-        <div>
-            <label for="password">Senha:</label>
-            <input type="password" id="password" name="password" required>
-        </div>
-        <a href="/register">Registrar</a>
-        <button type="submit">Entrar</button>
-    </form>
-    <div>
-        <div>
-            <a href="/oauth2/authorization/google">
-                Login com o Google
-            </a>
+    <div style="display: flex; justify-content: center; align-items: center; height: 80vh; background-color: #f4f4f4;">
+        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); width: 100%; max-width: 400px;">
+            <h2 style="text-align: center; color: #333;">Entrar</h2>
+            <form id="login" method="post" th:action="@{/auth/login}" style="display: flex; flex-direction: column; gap: 1rem;">
+                <div>
+                    <label for="username" style="display: block; margin-bottom: 0.5rem; color: #555;">Usuário:</label>
+                    <input type="text" id="username" name="username" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div>
+                    <label for="password" style="display: block; margin-bottom: 0.5rem; color: #555;">Senha:</label>
+                    <input type="password" id="password" name="password" required style="width: 100%; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px;">
+                </div>
+                <div style="display: flex; justify-content: space-between; align-items: center;">
+                    <a href="/register" style="color: #4CAF50; text-decoration: none;">Registrar</a>
+                    <button type="submit" style="background-color: #4CAF50; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">Entrar</button>
+                </div>
+            </form>
+            <div style="margin-top: 1rem; text-align: center;">
+                <a href="/oauth2/authorization/google" style="color: #4CAF50; text-decoration: none;">Login com o Google</a>
+            </div>
         </div>
     </div>
-    <div><span>©Criado e desenvolvido por Leonardo de Oliveira Ramos</span></div>
+    <footer style=" padding: 1rem; background-color: #333; color: white;">
+        <span>© Criado e desenvolvido por Leonardo de Oliveira Ramos</span>
+    </footer>
 </div>
 </body>
 <script src="https://www.google.com/recaptcha/api.js"></script>
