@@ -4,10 +4,13 @@ import com.example.integracaomtloginoauth2.model.AuthResponse;
 import com.example.integracaomtloginoauth2.model.LoginRequest;
 import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.service.JwtTokenService;
+import com.example.integracaomtloginoauth2.service.TokenBlacklistService;
 import com.example.integracaomtloginoauth2.service.UserAuthenticationService;
 import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -21,10 +24,12 @@ import org.springframework.web.servlet.ModelAndView;
 public class AuthController {
     private final UserAuthenticationService userAuthenticationService;
     private final JwtTokenService jwtTokenService;
+    private final TokenBlacklistService tokenBlacklistService;
 
-    public AuthController(UserAuthenticationService userAuthenticationService, JwtTokenService jwtTokenService) {
+    public AuthController(UserAuthenticationService userAuthenticationService, JwtTokenService jwtTokenService, TokenBlacklistService tokenBlacklistService) {
         this.userAuthenticationService = userAuthenticationService;
         this.jwtTokenService = jwtTokenService;
+        this.tokenBlacklistService = tokenBlacklistService;
     }
 
     @GetMapping("/auth/login")
@@ -33,7 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
+    public ResponseEntity<?> authenticateUser(@Valid LoginRequest loginRequest) {
         try {
             Authentication authentication = userAuthenticationService.authenticateUser(loginRequest);
 
@@ -47,24 +52,32 @@ public class AuthController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<?> logout(@CookieValue(value = "JSESSIONID", required = false) String token, HttpServletResponse response) {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
         try {
-            if (token != null) {
-                jwtTokenService.invalidateToken(token,response);
-            } else {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).body("{token.not.present}");
+            final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = authHeader.substring(7);
+                tokenBlacklistService.blacklistToken(token);
             }
+
             SecurityContextHolder.clearContext();
             return ResponseEntity.ok("Logout realizado com sucesso");
         } catch (Exception e) {
             System.out.println("{token.not.logout}" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("{token.not.logout}");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{token.not.logout}");
         }
     }
 
     @GetMapping("/register")
     public ModelAndView register() {
         return new ModelAndView("register.html");
+    }
+
+
+    @GetMapping("/oauth2/success")
+    public String oauth2Success() {
+        return "index.html";
     }
 
 }
