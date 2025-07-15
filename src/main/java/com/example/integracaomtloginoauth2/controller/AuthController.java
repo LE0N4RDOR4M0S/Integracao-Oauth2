@@ -62,10 +62,11 @@ public class AuthController {
             }
 
             SecurityContextHolder.clearContext();
-            return ResponseEntity.ok("Logout realizado com sucesso");
+            return ResponseEntity.ok().body("{\"message\": \"Logout realizado com sucesso\"}");
         } catch (Exception e) {
-            System.out.println("{token.not.logout}" + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("{token.not.logout}");
+            System.err.println("Error during logout: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("{\"error\": \"token.not.logout\"}");
         }
     }
 

@@ -60,7 +60,7 @@ public class UsuarioService {
      */
     public UsuarioResponse save(UsuarioRequest usuario) {
         if (existsThisUser(usuario.getUsername(), usuario.getEmail())) {
-            throw new RuntimeException("Usuário já existe");
+            throw new RuntimeException("Usuário já existe com este username ou email");
         }
         Usuario user = usuario.toEntity();
         user.setPassword(passwordEncoder.encode(usuario.getPassword()));
