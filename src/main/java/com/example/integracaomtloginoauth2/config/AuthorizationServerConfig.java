@@ -2,6 +2,7 @@ package com.example.integracaomtloginoauth2.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
 import org.springframework.security.oauth2.server.authorization.client.RegisteredClient;
@@ -17,10 +18,10 @@ import java.time.Duration;
 public class AuthorizationServerConfig {
 
     @Bean
-    public RegisteredClientRepository registeredClientRepository() {
+    public RegisteredClientRepository registeredClientRepository(PasswordEncoder passwordEncoder) {
         RegisteredClient registeredClient = RegisteredClient.withId("client-id")
                 .clientId("client-id")
-                .clientSecret("{noop}client-secret")
+                .clientSecret(passwordEncoder.encode("client-secret"))
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .authorizationGrantType(AuthorizationGrantType.REFRESH_TOKEN)
                 .authorizationGrantType(AuthorizationGrantType.CLIENT_CREDENTIALS)
@@ -37,11 +38,6 @@ public class AuthorizationServerConfig {
                 .build();
 
         return new InMemoryRegisteredClientRepository(registeredClient);
-    }
-
-    @Bean
-    public OAuth2AuthorizationServerConfigurer oAuth2AuthorizationServerConfigurer() {
-        return new OAuth2AuthorizationServerConfigurer();
     }
 
     @Bean
