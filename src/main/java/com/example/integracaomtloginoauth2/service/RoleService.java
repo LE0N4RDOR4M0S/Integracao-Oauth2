@@ -2,9 +2,11 @@ package com.example.integracaomtloginoauth2.service;
 
 import org.keycloak.admin.client.Keycloak;
 import org.keycloak.representations.idm.RoleRepresentation;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 @Service
+@Profile("!test")
 public class RoleService {
     private final Keycloak keycloakAdminClient;
     private final String REALM_NAME = "baeldung";
