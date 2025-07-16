@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class KeycloakAdminClientConfig {
 
-    @Value("${keycloak.client-secret}")
+    @Value("${spring.security.oauth2.client.registration.keycloak.client-secret}")
     private String client_secret;
 
     @Bean

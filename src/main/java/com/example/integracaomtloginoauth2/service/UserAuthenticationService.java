@@ -2,7 +2,6 @@ package com.example.integracaomtloginoauth2.service;
 
 import com.example.integracaomtloginoauth2.model.LoginRequest;
 import com.example.integracaomtloginoauth2.model.Usuario;
-import com.example.integracaomtloginoauth2.model.UsuarioRequest;
 import com.example.integracaomtloginoauth2.repository.UsuarioRepository;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
