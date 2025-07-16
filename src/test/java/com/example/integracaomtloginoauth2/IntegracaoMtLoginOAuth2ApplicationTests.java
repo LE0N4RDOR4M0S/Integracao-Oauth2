@@ -1,20 +1,17 @@
 package com.example.integracaomtloginoauth2;
 
-import com.example.integracaomtloginoauth2.config.KeycloakAdminClientConfig;
+import com.example.integracaomtloginoauth2.config.TestSecurityConfig;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration;
-import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest(properties = {
-        "spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAuth2ClientAutoConfiguration,org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration"
-})
+@SpringBootTest
 @ActiveProfiles("test")
+@Import(TestSecurityConfig.class)
 class IntegracaoMtLoginOAuth2ApplicationTests {
 
     @Test
     void contextLoads() {
     }
-
 }
