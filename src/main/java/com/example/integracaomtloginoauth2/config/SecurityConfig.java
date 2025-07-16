@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,8 @@ import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.security.oauth2.core.oidc.user.OidcUserAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2UserAuthority;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -29,52 +32,34 @@ import static org.springframework.security.config.Customizer.withDefaults;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UsuarioRepository usuarioRepository;
-    private final OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler;
-
-    public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter,
-                          UsuarioRepository usuarioRepository,
-                          OAuth2LoginSuccessHandler oAuth2LoginSuccessHandler) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.usuarioRepository = usuarioRepository;
-        this.oAuth2LoginSuccessHandler = oAuth2LoginSuccessHandler;
-    }
-
     @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity security) throws Exception {
-        security.cors(Customizer.withDefaults())
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http
                 .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(authorizeRequests -> authorizeRequests
-                        .requestMatchers("/login/**", "/oauth2/**").permitAll()
-                        .requestMatchers("/swagger-ui.html", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/auth/login", "/auth/login/**", "/register").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios/register").permitAll()
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/public/**", "/login/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-
-                .oauth2Login(oauth2 -> oauth2
-                        .userInfoEndpoint(userInfo -> userInfo
-                                .userService(this.oauth2UserService())
+                .oauth2Login(Customizer.withDefaults())
+                .oauth2ResourceServer(oauth2 -> oauth2
+                        .jwt(jwt -> jwt
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
-                        .successHandler(this.oAuth2LoginSuccessHandler)
                 );
 
-
-        return security.build();
+        return http.build();
     }
 
     @Bean
-    public OAuth2UserService<OAuth2UserRequest, OAuth2User> oauth2UserService() {
-        return new IdpOauth2Config(usuarioRepository);
+    public JwtAuthenticationConverter jwtAuthenticationConverter() {
+        JwtAuthenticationConverter jwtConverter = new JwtAuthenticationConverter();
+        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
+        authoritiesConverter.setAuthoritiesClaimName("realm_access");
+        authoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtConverter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        return jwtConverter;
     }
 }
